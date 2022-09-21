@@ -1,5 +1,7 @@
 
-
+//=========================================== Usuario para modificar el Stock =================================================
+let UsuarioAdmin = "ADMIN"
+let ContraseñaAdmin = "originalidad"
 
 let articulos = [  
 {id: 1, tipo: 'taza', nombre: 'Taza Tortuga', precio: 500, cantidad: 10},
@@ -29,11 +31,42 @@ function inicializarMainMenu(){
     botonMenuInventario = document.getElementById("botonMenuInventario")
     botonMenuComprar = document.getElementById("botonMenuComprar")
     botonMenuInventario.onclick = () => {
-        MenuInventario()
+        ValidarSesion()
     }
     botonMenuComprar.onclick = () => {
         MenuComprar()
     }
+}
+
+function ValidarSesion(){
+  MainContainer.innerHTML = `
+  <div class="col-md-6">
+      <h3>Ingresar Sesión</h3>
+  <form id="formSesion">
+  <div class="mb-3">
+    <label class="form-label">Usuario</label>
+    <input type="text" class="form-control" id="inputUser" />
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Contraseña</label>
+    <input
+      type="password"
+      class="form-control"
+      id="inputContraseña"
+    />
+  </div>
+
+  <div class="mb-3">
+    <button type="submit" class="btn btn-primary">Registrar</button>
+  </div>
+</form>
+<button class="btn btn-primary" id="botonVolverS">Volver</button>
+</div>`
+
+iniciarElemSesion()
+EventosSesión()
+
+botonVolverS.onclick = () => MainMenuStart()
 }
 
 function MenuInventario(){
@@ -43,7 +76,7 @@ function MenuInventario(){
       <div id="contenedorProductos" class="row"></div>
     </div>
     <div class="col-md-6">
-      <h3>Ejemplo formulario</h3>
+      <h3>Nuevo Item</h3>
       <form id="formulario">
         <div class="mb-3">
           <label class="form-label">ID</label>
@@ -86,16 +119,33 @@ function MenuInventario(){
 }
 
 function MenuComprar(){
-  MainContainer.innerHTML = `<div class="row">
-    <div class="col-md-6">
-      <div id="contenedorProductos" class="row"></div>
+  MainContainer.innerHTML = `
+<div class="row">
+  <div class="col-md-6">
+    <div id="contenedorProductos" class="row"></div>
+  </div>
+  <div class="col-md-6">
+    <h3> Carrito
+    </h3>
+    <ul class= p-5 id="listaCarrito">
+    </ul>
+    <div id="pieCarrito">
+    <button class="btn btn-primary" id="botonVolver2"> Volver
+    </button>
+    <button class="btn btn-warning" id="botonComprarFinal"> Comprar Carrito
+    </button>
     </div>
-    <div class="col-md-6">
-      <div id="contenedorCarrito" class="row"></div>
-    </div>
-    </div>`
-    
+  </div>
+</div>`
   IniciarMenuCompra()
+  pintarProductosCarrito()
+  botonVolver2.onclick = () => {
+    if(carrito["length"] != 0){
+      alert("Se Guardará el carrito")
+    }
+    MainMenuStart()}
+  botonComprarFinal.onclick = () => Presupuesto() 
+
 }
 
 function Main(){

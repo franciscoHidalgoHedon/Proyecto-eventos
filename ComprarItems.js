@@ -1,4 +1,7 @@
 let carrito = []
+let listaCarrito
+let pieCarrito
+let botonComprarFinal
 
 class ProductoCarrito {
     constructor(id, nombre, precio, cantidad) {
@@ -19,9 +22,6 @@ function pintarProductosCompra() {
         column.innerHTML = `
         <div class="card">
             <div class="card-body">
-            <p class="card-text">ID:
-                <b>${producto.id}</b>
-            </p>
             <p class="card-text">Nombre:
                 <b>${producto.nombre}</b>
             </p>
@@ -31,19 +31,12 @@ function pintarProductosCompra() {
             <p class="card-text">Cantidad:
                 <b>FUERA DE STOCK</b>
             </p>
-            </div>
-            <div class="card-footer">
-              <div>
-                
-            </div>
-        </div>`
+            </div>`
+            contenedorProductos.append(column);
       }else{
         column.innerHTML = `
         <div class="card">
             <div class="card-body">
-            <p class="card-text">ID:
-                <b>${producto.id}</b>
-            </p>
             <p class="card-text">Nombre:
                 <b>${producto.nombre}</b>
             </p>
@@ -60,89 +53,58 @@ function pintarProductosCompra() {
             </div>
             </div>
         </div>`
+        contenedorProductos.append(column);
+        let botoncomprar = document.getElementById(`botoncomprar-${producto.id}`);
+            botoncomprar.onclick = () => agregarAlCarrito(producto.id);
       }
-      contenedorProductos.append(column);
-
-      let botoncomprar = document.getElementById(`botoncomprar-${producto.id}`);
-      botoncomprar.onclick = () => agregarAlCarrito(producto.id);
+      
     });
   }
 
 function pintarProductosCarrito() {
-    contenedorCarrito.innerHTML = "";
+  
+  if(carrito["length"] == 0){
+    listaCarrito.innerHTML = "<h5> Vacío </h5>"
+    
+  }else{
+    listaCarrito.innerHTML = "";
+    
     carrito.forEach((producto) => {
-      let columnC = document.createElement("div");
-      columnC.className = "col-md-4 mt-3";
-      columnC.id = `columnaC-${producto.id}`;
-      if (producto.cantidad == 0){
-        columnC.innerHTML = `
-        <div class="card">
-            <div class="card-body">
-            <p class="card-text">ID:
-                <b>${producto.id}</b>
-            </p>
-            <p class="card-text">Nombre:
-                <b>${producto.nombre}</b>
-            </p>
-            <p class="card-text">Precio:
-                <b>${producto.precio}</b>
-            </p>
-            <p class="card-text">Cantidad:
-                <b>FUERA DE STOCK</b>
-            </p>
-            </div>
-            <div class="card-footer">
-              <div>
-                
-            </div>
-        </div>`
-      }else{
-        columnC.innerHTML = `
-        <div class="card">
-            <div class="card-body">
-            <p class="card-text">ID:
-                <b>${producto.id}</b>
-            </p>
-            <p class="card-text">Nombre:
-                <b>${producto.nombre}</b>
-            </p>
-            <p class="card-text">Precio:
-                <b>${producto.precio}</b>
-            </p>
-            <p class="card-text">Cantidad:
-                <b>${producto.cantidad}</b>
-            </p>
-            </div>
-            <div class="card-footer">
-            <div>
-                      <button class="btn btn-primary p-3" id="botonMasC-${producto.id}" >+</button>
-                      <button class="btn btn-primary p-3" id="botonMenosC-${producto.id}" >-</button>
-                    </div>
-                      <button class="btn btn-danger" id="botonEliminarC-${producto.id}" >Eliminar</button>
-            </div>
-        </div>`
-      }
-      contenedorProductos.append(column);
+      let item = document.createElement("li")
+      item.id = `itemLista-${producto.id}`
+      item.className = "col-md-4 mt-3"
+      item.innerHTML = `${producto.nombre}
+      <ul>
+      precio: ${producto.precio}
+      </ul>
+      <ul>
+      cantidad: ${producto.cantidad}
+      </ul>
+      <button class="btn btn-danger" id="botonBorrarCarrito-${producto.id}"> eliminar </button>
+      </ul>
+      `
+      let botonComprarr = document.createElement("button")
 
-      let botonEliminarC = document.getElementById(`botonEliminarC-${producto.id}`);
+      listaCarrito.append(item)
+
+      let botonEliminarC = document.getElementById(`botonBorrarCarrito-${producto.id}`);
       botonEliminarC.onclick = () => eliminarProductoC(producto.id);
-
-      let botonMasC = document.getElementById(`botonMasC-${producto.id}`);
-      botonMasC.onclick = () => SumarCantidadC(producto.id);
-
-      let botonMenosC = document.getElementById(`botonMenosC-${producto.id}`);
-      botonMenosC.onclick = () => RestarCantidadC(producto.id);
-    });
+    })
+  }
 }
 
 function eliminarProductoC(idProducto) {
-    let columnaBorrar = document.getElementById(`columnaC-${idProducto}`);
+    let indiceArt = articulos.findIndex(
+      (producto) => Number(producto.id) === Number(idProducto)
+    );
     let indiceBorrar = carrito.findIndex(
       (producto) => Number(producto.id) === Number(idProducto)
     );
-  
+
+    articulos[indiceArt]["cantidad"] += carrito[indiceBorrar]["cantidad"]
     carrito.splice(indiceBorrar, 1);
-    columnaBorrar.remove();
+    pintarProductosCarrito()
+    pintarProductosCompra()
   }
 
   function SumarCantidadC(idProducto) {
@@ -169,7 +131,10 @@ function eliminarProductoC(idProducto) {
 
 function IniciarMenuCompra(){
     contenedorProductos = document.getElementById("contenedorProductos");
-    contenedorCarrito = document.getElementById("contenedorCarrito");
+    listaCarrito = document.getElementById("listaCarrito");
+    pieCarrito = document.getElementById("pieCarrito")
+    botonVolver2 = document.getElementById("botonVolver2");
+    botonComprarFinal = document.getElementById("botonComprarFinal");
     pintarProductosCompra()
 }
 
@@ -181,6 +146,14 @@ function agregarAlCarrito(idProducto){
     let indiceCarrito = carrito.findIndex(
         (producto) => Number(producto.id) === Number(idProducto)
     );
+
+    if(articulos[indice]["cantidad"] == 0){
+      alert("no hay stock que remover")
+    }
+    else{
+      articulos[indice]["cantidad"] -= 1
+      pintarProductosCompra()
+    }
 
     if(indiceCarrito == -1){
         carrito.push(
@@ -196,4 +169,15 @@ function agregarAlCarrito(idProducto){
     }
 
     pintarProductosCarrito()
+}
+
+function Presupuesto(){
+  if (carrito["length"] == 0){
+      alert("El Carrito Está Vacío")
+  }
+  else{
+      carrito = []
+      pintarProductosCarrito()
+      alert("Gracias por comprar en Vajillas.com")
+  }
 }
